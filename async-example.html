@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Promises test</title>
+  <title>Async with Promises test</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -14,7 +14,26 @@
   </svg>
   <script src="utils.js"></script>
 <script>
-    
+    getJson('story.json').then(story=>{
+        addHtmlToPage(story.heading);
+        
+        return story.chapterUrls.reduce((chain,chapteUrl)=>{
+            return chain.then(()=>{
+                return getJson(chapteUrl);
+            }).then(chapter=>{
+                addHtmlToPage(chapter.html);
+            });
+        
+    },Promise.resolve());
+    }).then(()=>{
+        addTextToPage('All Done');
+    }).catch((err)=>{
+        addTextToPage('Argh, broken-',err.message);
+    }).then(()=>{
+        document.querySelector('.spinner').style.display='none';
+    })
+
+
 </script>
 </body>
 </html>
